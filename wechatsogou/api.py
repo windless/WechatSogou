@@ -11,7 +11,7 @@ import time
 import requests
 
 from wechatsogou.const import agents, WechatSogouConst
-from wechatsogou.exceptions import WechatSogouException, WechatSogouRequestsException, WechatSogouVcodeOcrException
+from wechatsogou.exceptions import WechatSogouException, WechatSogouRequestsException, WechatSogouVcodeOcrException, WechatSogouUnlockFailedException
 from wechatsogou.five import must_str, quote
 from wechatsogou.identify_image import (identify_image_callback_by_hand, unlock_sogou_callback_example, unlock_weixin_callback_example, ws_cache)
 from wechatsogou.request import WechatSogouRequest
@@ -127,11 +127,15 @@ class WechatSogouAPI(object):
             if '请输入验证码' in resp.text:
                 resp = session.get(url)
                 resp.encoding = 'utf-8'
+                if 'antispider' in resp.url or '请输入验证码' in resp.text:
+                    raise WechatSogouUnlockFailedException
             else:
                 headers = self.__set_cookie(referer=referer)
                 headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 6.1; WOW64)'
                 resp = self.__get(url, session, headers)
                 resp.encoding = 'utf-8'
+                if 'antispider' in resp.url or '请输入验证码' in resp.text:
+                    raise WechatSogouUnlockFailedException
 
         return resp
 

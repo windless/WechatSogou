@@ -27,3 +27,10 @@ class WechatSogouRequestsException(WechatSogouException):
     def __init__(self, errmsg, r):
         WechatSogouException('{} [url {}] [content {}]'.format(errmsg, r.url, r.content))
         self.status_code = r.status_code
+
+
+class WechatSogouUnlockFailedException(WechatSogouException):
+    """基于搜狗搜索的的微信公众号爬虫接口 解锁失败 异常类
+    """
+    pass
+
